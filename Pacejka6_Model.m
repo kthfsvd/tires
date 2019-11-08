@@ -6,5 +6,5 @@ fy  = D.*sin(P(4).*atan(P(3).* (x1+P(6)))) + P(5);
 disp('hello')
 disp('Saurabh')
 disp('Shashwat')
-
+disp('slack') 
 
