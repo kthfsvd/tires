@@ -1,7 +1,7 @@
 close all
 clear all;
 % close all
-global FZ0 R0 KY
+global FZ0 R0 
 
 global PCY1 PDY1 PDY2 PDY3 ...
     PEY1 PEY2 PEY3 PEY4  ...
@@ -26,6 +26,8 @@ MX = MX(inx);
 P = P(inx);
 ET = ET(inx);
 V = V(inx);
+SL = SL(inx);
+FX = FX(inx);
 
 
 m=1:length(SA);     % point counter
@@ -186,23 +188,24 @@ A_old =[PCY1 PDY1 PDY2 PDY3 PEY1 PEY2 PEY3 PEY4 PKY1 PKY2 PKY3 PHY1 PHY2 PHY3 PV
 
 options =optimset('MaxFunEvals',20000,'MaxIter',20000,'Display','final','TolX',1e-7,'TolFun',1e-7);
 
-% fig1=figure ('MenuBar','none','Name',['Pacejka_97  fy Fitting Results'],'Position',[2 2 1600 1180],'NumberTitle','off');
-% for k=1:20
-%     [A,RESNORM(k),RESIDUAL,EXITFLAG] = lsqcurvefit('MF52_Fy_fcn',A_old,INPUT,t.FY,[],[],options);
-%         AA(:,k)=A; 
-%         for n=1:18
-%         subplot(3,6,n)
-%         bar([AA(n,:)],'group')
-%         title(['A(' num2str(n) ')' ' =' A_str{n}],'FontSize',8)
-%     end
-% 
-%     for n=1:18  % update A coefficients to newest values
-%         disp(['A_old(' num2str(n) ') = ' num2str(A_old(n)) ';    ' 'A(' num2str(n) ') = ' num2str(A(n)) ';'])
-%         eval(['A_old(' num2str(n) ') = ' num2str(A(n)) ' -1*eps*rand;']) % bootstrap
-%     end
-% %     set(fig1,'Name',[filename '     Free Rolling Lateral Force      Iteration: ' num2str(k)  '         RESNORM: ' num2str(RESNORM(k)) ])
-%     drawnow
-% end
+fig1=figure ('MenuBar','none','Name',['Pacejka_97  fy Fitting Results'],'Position',[2 2 1600 1180],'NumberTitle','off');
+for k=1:20
+    [A,RESNORM(k),RESIDUAL,EXITFLAG] = lsqcurvefit('MF52_Fy_fcn',A_old,INPUT,t.FY,[],[],options);
+        AA(:,k)=A; 
+        for n=1:18
+        subplot(3,6,n)
+        bar([AA(n,:)],'group')
+        title(['A(' num2str(n) ')' ' =' A_str{n}],'FontSize',8)
+    end
+
+    for n=1:18  % update A coefficients to newest values
+        disp(['A_old(' num2str(n) ') = ' num2str(A_old(n)) ';    ' 'A(' num2str(n) ') = ' num2str(A(n)) ';'])
+        eval(['A_old(' num2str(n) ') = ' num2str(A(n)) ' -1*eps*rand;']) % bootstrap
+    end
+%     set(fig1,'Name',[filename '     Free Rolling Lateral Force      Iteration: ' num2str(k)  '         RESNORM: ' num2str(RESNORM(k)) ])
+    drawnow
+end
+A_final = A;
 % 
 % inx0    = find(fmdata(:,2) == 4);  % zero camber points
 % fmdata0 = fmdata(inx0,:);
@@ -225,50 +228,50 @@ options =optimset('MaxFunEvals',20000,'MaxIter',20000,'Display','final','TolX',1
 % zlabel('Lateral Force @ Zero Camber')
 % legend('WAC Spline','Data Pts','MF5.2')
 % colormap(white)
-QBZ1 = 10;
-QBZ2 = -2;
-QBZ3 = -1;
-QBZ4 = -1;
-QBZ5 = -1;
-QBZ9 = 20;
-QBZ10 = -2;
-QCZ1 = 1.18
-QDZ1 = -.1;
-QDZ2 = -.01;
-QDZ3 = 10;
-QDZ4 = -100;
-QDZ6 = .01;
-QDZ7 = -.0002;
-QDZ8 = .1;
-QDZ9 = -.1;
-QEZ1 = -1.6;
-QEZ2 = -0.36;
-QEZ3 = -1;
-QEZ4 = 0.17433;
-QEZ5 = -0.9;
-QHZ1 = 0.005;
-QHZ2 = -0.0019;
-QHZ3 = 0.005;
-QHZ4 = -.08;
-
-clear BB
-B_str ={'QBZ1' 'QBZ2' 'QBZ3' 'QBZ4' 'QBZ5' 'QBZ9' 'QBZ10' 'QCZ1' 'QDZ1' 'QDZ2' 'QDZ3' 'QDZ4' 'QDZ6' 'QDZ7' 'QDZ8' 'QDZ9' 'QEZ1' 'QEZ2' 'QEZ3' 'QEZ4' 'QEZ5' 'QHZ1' 'QHZ2' 'QHZ3' 'QHZ4'};
-B_old =[QBZ1 QBZ2 QBZ3 QBZ4 QBZ5 QBZ9 QBZ10 QCZ1 QDZ1 QDZ2 QDZ3 QDZ4 QDZ6 QDZ7 QDZ8 QDZ9 QEZ1 QEZ2 QEZ3 QEZ4 QEZ5 QHZ1 QHZ2 QHZ3 QHZ4];
-fig2=figure ('MenuBar','none','Name',['Pacejka_97  Mz Fitting Results'],'Position',[2 2 1600 1180],'NumberTitle','off');
-for k=1:10
-   [B,RESNORM(k),RESIDUAL,EXITFLAG] = lsqcurvefit('MF52_Mz_fcn',B_old,INPUT,t.MZ,[],[],options);
-    BB(:,k)=B
-    for n=1:25 
-        subplot(5,5,n)
-        bar([BB(n,:)],'group')
-        title(['B(' num2str(n) ')' ' =' B_str{n}],'FontSize',8)
-    end
-%     set(fig2,'Name',[filename '     Free Rolling Aligning Moment      Iteration: ' num2str(k)  '         RESNORM: ' num2str(RESNORM(k)) ])
-    drawnow
-    ; 
-    for n=1:25  % update A coefficients to newest values
-        disp(['B_old(' num2str(n) ') = ' num2str(B_old(n)) ';    ' 'B(' num2str(n) ') = ' num2str(B(n)) ';'])
-        eval(['B_old(' num2str(n) ') = ' num2str(B(n)) ' -1*eps*rand;']) % bootstrap
-    end
-end
+% QBZ1 = 10;
+% QBZ2 = -2;
+% QBZ3 = -1;
+% QBZ4 = -1;
+% QBZ5 = -1;
+% QBZ9 = 20;
+% QBZ10 = -2;
+% QCZ1 = 1.18
+% QDZ1 = -.1;
+% QDZ2 = -.01;
+% QDZ3 = 10;
+% QDZ4 = -100;
+% QDZ6 = .01;
+% QDZ7 = -.0002;
+% QDZ8 = .1;
+% QDZ9 = -.1;
+% QEZ1 = -1.6;
+% QEZ2 = -0.36;
+% QEZ3 = -1;
+% QEZ4 = 0.17433;
+% QEZ5 = -0.9;
+% QHZ1 = 0.005;
+% QHZ2 = -0.0019;
+% QHZ3 = 0.005;
+% QHZ4 = -.08;
+% 
+% clear BB
+% B_str ={'QBZ1' 'QBZ2' 'QBZ3' 'QBZ4' 'QBZ5' 'QBZ9' 'QBZ10' 'QCZ1' 'QDZ1' 'QDZ2' 'QDZ3' 'QDZ4' 'QDZ6' 'QDZ7' 'QDZ8' 'QDZ9' 'QEZ1' 'QEZ2' 'QEZ3' 'QEZ4' 'QEZ5' 'QHZ1' 'QHZ2' 'QHZ3' 'QHZ4'};
+% B_old =[QBZ1 QBZ2 QBZ3 QBZ4 QBZ5 QBZ9 QBZ10 QCZ1 QDZ1 QDZ2 QDZ3 QDZ4 QDZ6 QDZ7 QDZ8 QDZ9 QEZ1 QEZ2 QEZ3 QEZ4 QEZ5 QHZ1 QHZ2 QHZ3 QHZ4];
+% fig2=figure ('MenuBar','none','Name',['Pacejka_97  Mz Fitting Results'],'Position',[2 2 1600 1180],'NumberTitle','off');
+% for k=1:10
+%    [B,RESNORM(k),RESIDUAL,EXITFLAG] = lsqcurvefit('MF52_Mz_fcn',B_old,INPUT,t.MZ,[],[],options);
+%     BB(:,k)=B
+%     for n=1:25 
+%         subplot(5,5,n)
+%         bar([BB(n,:)],'group')
+%         title(['B(' num2str(n) ')' ' =' B_str{n}],'FontSize',8)
+%     end
+% %     set(fig2,'Name',[filename '     Free Rolling Aligning Moment      Iteration: ' num2str(k)  '         RESNORM: ' num2str(RESNORM(k)) ])
+%     drawnow
+%     ; 
+%     for n=1:25  % update A coefficients to newest values
+%         disp(['B_old(' num2str(n) ') = ' num2str(B_old(n)) ';    ' 'B(' num2str(n) ') = ' num2str(B(n)) ';'])
+%         eval(['B_old(' num2str(n) ') = ' num2str(B(n)) ' -1*eps*rand;']) % bootstrap
+%     end
+% end
 
