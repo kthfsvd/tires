@@ -182,20 +182,23 @@ PVY1 = -0.0146;
 PVY2 = -0.003;
 PVY3 = -3.3543;
 PVY4 = -1.1311;
+% load Afinal.mat
 clear AA RESNORM
 A_str ={'PCY1' 'PDY1' 'PDY2' 'PDY3' 'PEY1' 'PEY2' 'PEY3' 'PEY4' 'PKY1' 'PKY2' 'PKY3' 'PHY1' 'PHY2' 'PHY3' 'PVY1' 'PVY2' 'PVY3' 'PVY4'};
 A_old =[PCY1 PDY1 PDY2 PDY3 PEY1 PEY2 PEY3 PEY4 PKY1 PKY2 PKY3 PHY1 PHY2 PHY3 PVY1 PVY2 PVY3 PVY4];
-
-options =optimset('MaxFunEvals',20000,'MaxIter',20000,'Display','final','TolX',1e-7,'TolFun',1e-7);
+% A_old = A_final;
+options =optimset('MaxFunEvals',50000,'MaxIter',50000,'Display','final','TolX',1e-7,'TolFun',1e-7);
 
 fig1=figure ('MenuBar','none','Name',['Pacejka_97  fy Fitting Results'],'Position',[2 2 1600 1180],'NumberTitle','off');
-for k=1:20
+for k=1:200
     [A,RESNORM(k),RESIDUAL,EXITFLAG] = lsqcurvefit('MF52_Fy_fcn',A_old,INPUT,t.FY,[],[],options);
         AA(:,k)=A; 
         for n=1:18
         subplot(3,6,n)
         bar([AA(n,:)],'group')
         title(['A(' num2str(n) ')' ' =' A_str{n}],'FontSize',8)
+        subplot(3,6,18)
+        plot(1:k,RESNORM)
     end
 
     for n=1:18  % update A coefficients to newest values
@@ -274,4 +277,10 @@ A_final = A;
 %         eval(['B_old(' num2str(n) ') = ' num2str(B(n)) ' -1*eps*rand;']) % bootstrap
 %     end
 % end
-
+pacefy=MF52_Fy_fcn(A_old,[SA FZ IA]);
+figure;plot3(SA,FZ,FY)
+hold on
+plot3(SA,FZ,pacefy,'.')
+figure;plot3(SA,IA,FY)
+hold on
+plot3(SA,IA,pacefy,'.')

@@ -21,7 +21,7 @@ global LFZO LCX LMUX LEX LKX  LHX LVX LCY LMUY LEY LKY LHY LVY ...
 input_filename = [PathName FileName];
 load(input_filename)
 pinterest = 12*6.89476;
-SAinterest = 0;
+SAinterest = -6;
 vinterest = 40;
 x = (abs(P-pinterest)<5) .* (abs(SA-SAinterest)<0.5) .* (abs(V-vinterest) <=3);
 [inx iny] = find(x==1);
@@ -158,47 +158,42 @@ LSGAL                    = 0.100000E+01         ;%typarr(  53)
 LGYR                     = 0.100000E+01         ;%typarr(  54)
 
 %[LATERAL_COEFFICIENTS]
-
-% PCY1 =  -0.0088;
-% PDY1 = -435.744;
-% PDY2 = -8.181;
-% PDY3 = 7.7211;
-% PEY1 = 1.0626;
-% PEY2 = -.0613;
-% PEY3 = 0.0214;
-% PEY4 = -0.2166;
-% PKY1 = -53.2126;
-% PKY2 = 2.1268;
-% PKY3 = 2.1448;
-% PHY1 = 0.0039;
-% PHY2 =  0.0021;
-% PHY3 = -.1602;
-% PVY1 = -0.0146;
-% PVY2 = -0.003;
-% PVY3 = -3.3543;
-% PVY4 = -1.1311;
-RBY1				= +2.033e+001			;%typarr(109)
-RBY2				= +8.152e+000			;%typarr(110)
-RBY3				= -1.243e-002			;%typarr(111)
-RCY1				= +9.317e-001			;%typarr(112)
-REY1				= -3.982e-004			;%typarr(113)
-REY2				= +3.077e-001			;%typarr(114)
-RHY1				= +0.000e+000			;%typarr(115)
-RHY2				= +0.000e+000			;%typarr(116)
-RVY1				= +0.000e+000			;%typarr(117)
-RVY2				= +0.000e+000			;%typarr(118)
-RVY3				= +0.000e+000			;%typarr(119)
-RVY4				= +0.000e+000			;%typarr(120)
-RVY5				= +0.000e+000			;%typarr(121)
-RVY6				= +0.000e+000			;%typarr(122)
+% RBY1				= +2.033e+001			;%typarr(109)
+% RBY2				= +8.152e+000			;%typarr(110)
+% RBY3				= -1.243e-002			;%typarr(111)
+% RCY1				= +9.317e-001			;%typarr(112)
+% REY1				= -3.982e-004			;%typarr(113)
+% REY2				= +3.077e-001			;%typarr(114)
+% RHY1				= +0.000e+000			;%typarr(115)
+% RHY2				= +0.000e+000			;%typarr(116)
+% RVY1				= +0.000e+000			;%typarr(117)
+% RVY2				= +0.000e+000			;%typarr(118)
+% RVY3				= +0.000e+000			;%typarr(119)
+% RVY4				= +0.000e+000			;%typarr(120)
+% RVY5				= +0.000e+000			;%typarr(121)
+% RVY6				= +0.000e+000			;%typarr(122)
+ RBY1                    =  13.6926      ;%Slope factor for combined Fy reduction
+ RBY2                    =  16.73951      ;%Variation of slope Fy reduction with alpha
+ RBY3                    =  0      ;%Shift term for alpha in slope Fy reduction
+ RCY1                    =  1.027807      ;%Shape factor for combined Fy reduction
+ REY1                    =  0.1825577      ;%Curvature factor of combined Fy
+ REY2                    =  0.04039062      ;%Curvature factor of combined Fy with load
+ RHY1                    =  0.01728101      ;%Shift factor for combined Fy reduction
+ RHY2                    =  0.02035527      ;%Shift factor for combined Fy reduction with load
+ RVY1                    =  -5.268754      ;%Kappa induced side force Svyk/Muy*Fz at Fznom
+ RVY2                    =  -3.553846      ;%Variation of Svyk/Muy*Fz with load
+ RVY3                    =  7.516166      ;%Variation of Svyk/Muy*Fz with camber
+ RVY4                    =  0.3207398      ;%Variation of Svyk/Muy*Fz with alpha
+ RVY5                    =  -5.145463      ;%Variation of Svyk/Muy*Fz with kappa
+ RVY6                    =  0.00948369      ;%Variation of Svyk/Muy*Fz with atan(kappa)
 clear AA RESNORM
 A_str ={'RBY1' 'RBY2' 'RBY3' 'RCY1' 'REY1' 'REY2' 'RHY1' 'RHY2' 'RVY1' 'RVY2' 'RVY3' 'RVY4' 'RVY5' 'RVY6'};
 A_old =[ RBY1   RBY2   RBY3   RCY1   REY1   REY2   RHY1   RHY2   RVY1   RVY2   RVY3   RVY4   RVY5   RVY6 ];
 
-options =optimset('MaxFunEvals',20000,'MaxIter',20000,'Display','final','TolX',1e-7,'TolFun',1e-7);
-
+options =optimset('MaxFunEvals',50000,'MaxIter',50000,'Display','final','TolX',1e-7,'TolFun',1e-7);
+figure
 fig1=figure ('MenuBar','none','Name',['Pacejka_97  fy Fitting Results'],'Position',[2 2 1600 1180],'NumberTitle','off');
-for k=1:20
+for k=1:25
     [A,RESNORM(k),RESIDUAL,EXITFLAG] = lsqcurvefit('MF52_Fy_combined_fcn',A_old,INPUT,t.FYK,[],[],options);
         AA(:,k)=A; 
         for n=1:14
@@ -213,6 +208,7 @@ for k=1:20
     end
 %     set(fig1,'Name',[filename '     Free Rolling Lateral Force      Iteration: ' num2str(k)  '         RESNORM: ' num2str(RESNORM(k)) ])
     drawnow
+plot(k,RESNORM(k),'o');hold on;
 end
 pacefy=MF52_Fy_combined_fcn(A,INPUT);
 inx0=find(INPUT(:,3)==0);
