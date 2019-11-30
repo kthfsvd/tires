@@ -21,9 +21,9 @@ global LFZO LCX LMUX LEX LKX  LHX LVX LCY LMUY LEY LKY LHY LVY ...
 input_filename = [PathName FileName];
 load(input_filename)
 pinterest = 12*6.89476;
-SAinterest = -6;
+% SAinterest = -6;
 vinterest = 40;
-x = (abs(P-pinterest)<5) .* (abs(SA-SAinterest)<0.5) .* (abs(V-vinterest) <=3);
+x = (abs(P-pinterest)<5) .*  (abs(V-vinterest) <=3);
 [inx iny] = find(x==1);
 SA1 = SA(inx);
 IA1 = IA(inx);
@@ -60,8 +60,19 @@ xlabel('Point Count')
 ylabel('Slip Ratio')
 legend('Test Data','Computed Slip Points of Interest'),legend Boxoff
 clear fmdata
-q=0;
 
+hold on
+zeros = 1;
+for n = 1:(length(z)-1)
+    q = z(n);
+    [M I] = max(SL1(z(n):z(n+1)));
+    q = q+I;
+    zeros(n+1) = q;
+    plot(zeros(n+1),M,'o')
+end
+
+z = zeros;
+q = 0;
 for n = 1:(length(z)-1) % for some reason there are some repeat runs here. Skip them
     sa = SA1(z(n):z(n+1));
     fz = FZ1(z(n):z(n+1));
@@ -95,8 +106,8 @@ for n = 1:(length(z)-1) % for some reason there are some repeat runs here. Skip 
 %     ind=find(abs(mzf-mz(rng)') > 7);
 %     mz(rng(ind))=mzf(ind);
     
-    sp_fyk = csaps(sl,fy,.1);
-    sp_fx=csaps(sl,fx,.1);
+    sp_fyk = csaps(sl,fy,.9999);
+    sp_fx=csaps(sl,fx,.9999);
     
     
     for temp=(min(sl)):0.01:(max(sl));
@@ -193,7 +204,7 @@ A_old =[ RBY1   RBY2   RBY3   RCY1   REY1   REY2   RHY1   RHY2   RVY1   RVY2   R
 options =optimset('MaxFunEvals',50000,'MaxIter',50000,'Display','final','TolX',1e-7,'TolFun',1e-7);
 figure
 fig1=figure ('MenuBar','none','Name',['Pacejka_97  fy Fitting Results'],'Position',[2 2 1600 1180],'NumberTitle','off');
-for k=1:25
+for k=1:50
     [A,RESNORM(k),RESIDUAL,EXITFLAG] = lsqcurvefit('MF52_Fy_combined_fcn',A_old,INPUT,t.FYK,[],[],options);
         AA(:,k)=A; 
         for n=1:14
